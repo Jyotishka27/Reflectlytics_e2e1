@@ -116,6 +116,102 @@
     </div>
   </div>
 
+  <div class="modal-overlay hidden" data-entry-modal>
+    <div class="modal-box">
+      <div class="modal-header">
+        <div>
+          <h2>Daily Entry</h2>
+          <p>Log your professional and personal updates for today.</p>
+        </div>
+        <button type="button" class="icon-btn" data-action="close-entry-form">✕</button>
+      </div>
+  
+      <form class="entry-form" data-entry-form>
+        <div class="form-grid">
+          <section class="form-section">
+            <h3>Professional Update</h3>
+  
+            <label class="form-field">
+              <span>Summary</span>
+              <textarea name="professionalSummary" rows="3" placeholder="What did you work on today?"></textarea>
+            </label>
+  
+            <label class="form-field">
+              <span>Wins</span>
+              <textarea name="professionalWins" rows="2" placeholder="Any progress, achievements, or completed tasks?"></textarea>
+            </label>
+  
+            <label class="form-field">
+              <span>Blockers</span>
+              <textarea name="professionalBlockers" rows="2" placeholder="What slowed you down today?"></textarea>
+            </label>
+  
+            <div class="inline-fields">
+              <label class="form-field">
+                <span>Mood</span>
+                <input type="text" name="professionalMood" placeholder="Focused / tired / productive" />
+              </label>
+  
+              <label class="form-field">
+                <span>Hours</span>
+                <input type="number" name="professionalHours" min="0" max="24" placeholder="8" />
+              </label>
+            </div>
+          </section>
+  
+          <section class="form-section">
+            <h3>Personal Update</h3>
+  
+            <label class="form-field">
+              <span>Summary</span>
+              <textarea name="personalSummary" rows="3" placeholder="How did your personal day go?"></textarea>
+            </label>
+  
+            <label class="form-field">
+              <span>Wins</span>
+              <textarea name="personalWins" rows="2" placeholder="Workout, family time, reading, anything good?"></textarea>
+            </label>
+  
+            <label class="form-field">
+              <span>Blockers</span>
+              <textarea name="personalBlockers" rows="2" placeholder="Anything that affected your personal goals?"></textarea>
+            </label>
+  
+            <label class="form-field">
+              <span>Mood</span>
+              <input type="text" name="personalMood" placeholder="Calm / low / happy / restless" />
+            </label>
+          </section>
+        </div>
+  
+        <section class="form-section">
+          <h3>Reflection</h3>
+  
+          <label class="form-field">
+            <span>Biggest Learning</span>
+            <textarea name="biggestLearning" rows="2" placeholder="What did you learn today?"></textarea>
+          </label>
+  
+          <label class="form-field">
+            <span>Gratitude</span>
+            <textarea name="gratitude" rows="2" placeholder="What are you grateful for today?"></textarea>
+          </label>
+  
+          <label class="form-field">
+            <span>Improvements</span>
+            <textarea name="improvements" rows="2" placeholder="What could have gone better today?"></textarea>
+          </label>
+        </section>
+  
+        <div class="form-actions">
+          <button type="button" class="secondary-btn" data-action="close-entry-form">Cancel</button>
+          <button type="submit" class="primary-btn">Save Entry</button>
+        </div>
+      </form>
+    </div>
+  </div>
+  
   <script type="module" src="./js/app.js"></script>
+  
 </body>
 </html>
