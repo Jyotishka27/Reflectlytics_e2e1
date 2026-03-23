@@ -150,6 +150,46 @@ export function renderReportSnapshot() {
   `;
 }
 
+export function renderHistoryEntries(entries) {
+  const historyListEl = document.querySelector("[data-history-list]");
+  if (!historyListEl) return;
+
+  if (!entries.length) {
+    historyListEl.innerHTML = `
+      <div class="empty-state">
+        <p>No past entries found.</p>
+      </div>
+    `;
+    return;
+  }
+
+  historyListEl.innerHTML = entries
+    .map(
+      (entry) => `
+        <article class="history-item">
+          <div class="history-item-top">
+            <h4>${formatDisplayDate(entry.date)}</h4>
+            <span class="status-badge ${getStatusClass(entry.status)}">${entry.status}</span>
+          </div>
+          <p><strong>Professional:</strong> ${truncateText(entry.professional.summary || "No professional update", 100)}</p>
+          <p><strong>Personal:</strong> ${truncateText(entry.personal.summary || "No personal update", 100)}</p>
+
+          <div class="history-actions">
+            <button
+              type="button"
+              class="history-edit-btn"
+              data-action="edit-entry"
+              data-entry-id="${entry.id}"
+            >
+              Edit
+            </button>
+          </div>
+        </article>
+      `
+    )
+    .join("");
+}
+
 export function openEntryModal() {
   const modal = document.querySelector("[data-entry-modal]");
   if (!modal) return;
@@ -166,9 +206,27 @@ export function closeEntryModal() {
   document.body.style.overflow = "";
 }
 
+export function openHistoryModal() {
+  const modal = document.querySelector("[data-history-modal]");
+  if (!modal) return;
+
+  modal.classList.remove("hidden");
+  document.body.style.overflow = "hidden";
+}
+
+export function closeHistoryModal() {
+  const modal = document.querySelector("[data-history-modal]");
+  if (!modal) return;
+
+  modal.classList.add("hidden");
+  document.body.style.overflow = "";
+}
+
 export function populateEntryForm(entry) {
   const form = document.querySelector("[data-entry-form]");
   if (!form || !entry) return;
+
+  form.dataset.editingEntryId = entry.id;
 
   form.professionalSummary.value = entry.professional.summary || "";
   form.professionalWins.value = entry.professional.wins || "";
@@ -190,6 +248,7 @@ export function resetEntryForm() {
   const form = document.querySelector("[data-entry-form]");
   if (!form) return;
   form.reset();
+  delete form.dataset.editingEntryId;
 }
 
 export function renderAll() {
