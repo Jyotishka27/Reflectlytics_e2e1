@@ -14,12 +14,19 @@ function getStatusClass(status) {
   }
 }
 
+function getSectionStatus(valueObject) {
+  const hasContent = Object.values(valueObject).some((value) =>
+    String(value || "").trim()
+  );
+  return hasContent ? "Done" : "Pending";
+}
+
 export function renderHeader() {
   const headerDateEl = document.querySelector("[data-today-date]");
   const headerGreetingEl = document.querySelector("[data-greeting]");
 
   if (headerDateEl) {
-    headerDateEl.textContent = `${state.today.dayName}, ${state.today.date}`;
+    headerDateEl.textContent = formatDisplayDate(state.today.date);
   }
 
   if (headerGreetingEl) {
@@ -56,6 +63,7 @@ export function renderTodayCard() {
         <button type="button" data-action="open-entry-form">Start Today’s Entry</button>
       </div>
     `;
+    renderTodayProgress(null);
     return;
   }
 
@@ -70,6 +78,25 @@ export function renderTodayCard() {
       <button type="button" data-action="open-entry-form">Continue Today’s Entry</button>
     </div>
   `;
+
+  renderTodayProgress(todayEntry);
+}
+
+export function renderTodayProgress(todayEntry) {
+  const progressChips = document.querySelectorAll(".progress-chip strong");
+
+  if (!progressChips.length) return;
+
+  if (!todayEntry) {
+    progressChips[0].textContent = "Pending";
+    progressChips[1].textContent = "Pending";
+    progressChips[2].textContent = "Pending";
+    return;
+  }
+
+  progressChips[0].textContent = getSectionStatus(todayEntry.professional);
+  progressChips[1].textContent = getSectionStatus(todayEntry.personal);
+  progressChips[2].textContent = getSectionStatus(todayEntry.reflection);
 }
 
 export function renderRecentEntries() {
@@ -121,6 +148,48 @@ export function renderReportSnapshot() {
       <button type="button" data-action="generate-report" disabled>Generate Report</button>
     </div>
   `;
+}
+
+export function openEntryModal() {
+  const modal = document.querySelector("[data-entry-modal]");
+  if (!modal) return;
+
+  modal.classList.remove("hidden");
+  document.body.style.overflow = "hidden";
+}
+
+export function closeEntryModal() {
+  const modal = document.querySelector("[data-entry-modal]");
+  if (!modal) return;
+
+  modal.classList.add("hidden");
+  document.body.style.overflow = "";
+}
+
+export function populateEntryForm(entry) {
+  const form = document.querySelector("[data-entry-form]");
+  if (!form || !entry) return;
+
+  form.professionalSummary.value = entry.professional.summary || "";
+  form.professionalWins.value = entry.professional.wins || "";
+  form.professionalBlockers.value = entry.professional.blockers || "";
+  form.professionalMood.value = entry.professional.mood || "";
+  form.professionalHours.value = entry.professional.hours || "";
+
+  form.personalSummary.value = entry.personal.summary || "";
+  form.personalWins.value = entry.personal.wins || "";
+  form.personalBlockers.value = entry.personal.blockers || "";
+  form.personalMood.value = entry.personal.mood || "";
+
+  form.biggestLearning.value = entry.reflection.biggestLearning || "";
+  form.gratitude.value = entry.reflection.gratitude || "";
+  form.improvements.value = entry.reflection.improvements || "";
+}
+
+export function resetEntryForm() {
+  const form = document.querySelector("[data-entry-form]");
+  if (!form) return;
+  form.reset();
 }
 
 export function renderAll() {
