@@ -1,1 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DayLedger</title>
+  <link rel="stylesheet" href="./css/style.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <div class="app-container">
+      <header class="app-header">
+        <div class="app-brand">
+          <h1>DayLedger</h1>
+          <p data-greeting>Welcome back.</p>
+        </div>
 
+        <div class="app-date-box">
+          <span>Today</span>
+          <strong data-today-date>Loading date...</strong>
+        </div>
+      </header>
+
+      <section class="stats-grid">
+        <article class="stat-card">
+          <span>Today's Status</span>
+          <strong data-stat="todays-status">--</strong>
+        </article>
+
+        <article class="stat-card">
+          <span>Current Streak</span>
+          <strong data-stat="current-streak">0</strong>
+        </article>
+
+        <article class="stat-card">
+          <span>This Month's Entries</span>
+          <strong data-stat="month-entries">0</strong>
+        </article>
+
+        <article class="stat-card">
+          <span>Last Report</span>
+          <strong data-stat="last-report">--</strong>
+        </article>
+      </section>
+
+      <section class="content-grid">
+        <div class="stack-lg">
+          <section class="panel">
+            <div class="section-title">
+              <div>
+                <h2>Quick Actions</h2>
+                <p>Start logging your day and keep your progress visible.</p>
+              </div>
+            </div>
+
+            <div class="quick-actions">
+              <button type="button" class="primary-btn" data-action="open-entry-form">
+                Add Today's Update
+              </button>
+              <button type="button" class="secondary-btn">
+                View Past Entries
+              </button>
+              <button type="button" class="secondary-btn" data-action="generate-report">
+                Generate Report
+              </button>
+            </div>
+
+            <div class="today-progress">
+              <div class="progress-chip">
+                <span>Professional</span>
+                <strong>Pending</strong>
+              </div>
+              <div class="progress-chip">
+                <span>Personal</span>
+                <strong>Pending</strong>
+              </div>
+              <div class="progress-chip">
+                <span>Reflection</span>
+                <strong>Pending</strong>
+              </div>
+            </div>
+          </section>
+
+          <section class="card-block" data-today-card>
+            <div class="card-inner">
+              <h3>Today’s Update</h3>
+              <p class="muted-text">Loading today’s entry...</p>
+            </div>
+          </section>
+        </div>
+
+        <div class="stack-lg">
+          <section class="panel">
+            <div class="section-title">
+              <div>
+                <h2>Recent Entries</h2>
+                <p>Your latest personal and professional updates.</p>
+              </div>
+            </div>
+
+            <div class="recent-entries-list" data-recent-entries>
+              <div class="empty-state">
+                <p>Loading entries...</p>
+              </div>
+            </div>
+          </section>
+
+          <section class="card-block" data-report-snapshot>
+            <div class="card-inner">
+              <h3>Monthly Snapshot</h3>
+              <p class="muted-text">Loading report snapshot...</p>
+            </div>
+          </section>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <script type="module" src="./js/app.js"></script>
+</body>
+</html>
