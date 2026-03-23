@@ -3,16 +3,21 @@ import { getTodayParts } from "./utils.js";
 import {
   loadEntries,
   getEntryByDate,
+  getEntryById,
   getEntriesByMonth,
   getOrCreateTodayEntry,
+  getRecentEntries,
   saveEntry,
   updateEntryStatus
 } from "./entries.js";
 import { getLatestReportLabel } from "./reports.js";
 import {
   renderAll,
+  renderHistoryEntries,
   openEntryModal,
   closeEntryModal,
+  openHistoryModal,
+  closeHistoryModal,
   populateEntryForm,
   resetEntryForm
 } from "./ui.js";
@@ -70,7 +75,28 @@ function openTodayEntry() {
   renderAll();
 }
 
-function collectFormData(form, existingEntry) {
+function openEntryForEdit(entryId) {
+  const entry = getEntryById(entryId);
+  if (!entry) return;
+
+  closeHistoryModal();
+  populateEntryForm(entry);
+  openEntryModal();
+}
+
+function openPastEntries() {
+  const sortedEntries = [...state.entries].sort(
+    (a, b) => new Date(b.date) - new Date(a.date)
+  );
+
+  renderHistoryEntries(sortedEntries);
+  openHistoryModal();
+}
+
+function collectFormData(form, fallbackEntry) {
+  const editingEntryId = form.dataset.editingEntryId;
+  const existingEntry = editingEntryId ? getEntryById(editingEntryId) : fallbackEntry;
+
   return {
     ...existingEntry,
     professional: {
@@ -109,6 +135,18 @@ function bindEvents() {
       resetEntryForm();
     }
 
+    if (action === "view-past-entries") {
+      openPastEntries();
+    }
+
+    if (action === "close-history-modal") {
+      closeHistoryModal();
+    }
+
+    if (action === "edit-entry") {
+      openEntryForEdit(event.target.dataset.entryId);
+    }
+
     if (action === "generate-report") {
       alert("Report generation comes later.");
     }
@@ -120,22 +158,32 @@ function bindEvents() {
     form.addEventListener("submit", (event) => {
       event.preventDefault();
 
-      const existingEntry = getOrCreateTodayEntry(state.today.date);
-      const updatedEntry = collectFormData(form, existingEntry);
+      const todayFallbackEntry = getOrCreateTodayEntry(state.today.date);
+      const updatedEntry = collectFormData(form, todayFallbackEntry);
 
       saveEntry(updatedEntry);
       updateEntryStatus(updatedEntry);
       refreshDashboardStats();
       renderAll();
       closeEntryModal();
+      resetEntryForm();
     });
   }
 
-  const modal = document.querySelector("[data-entry-modal]");
-  if (modal) {
-    modal.addEventListener("click", (event) => {
-      if (event.target === modal) {
+  const entryModal = document.querySelector("[data-entry-modal]");
+  if (entryModal) {
+    entryModal.addEventListener("click", (event) => {
+      if (event.target === entryModal) {
         closeEntryModal();
+      }
+    });
+  }
+
+  const historyModal = document.querySelector("[data-history-modal]");
+  if (historyModal) {
+    historyModal.addEventListener("click", (event) => {
+      if (event.target === historyModal) {
+        closeHistoryModal();
       }
     });
   }
@@ -150,5 +198,4 @@ function initApp() {
 
   console.log(`${state.app.name} initialized`);
 }
-
 document.addEventListener("DOMContentLoaded", initApp);
