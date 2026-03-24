@@ -228,6 +228,38 @@
       </div>
     </div>
   </div>
+
+  <div class="modal-overlay hidden" data-report-modal>
+    <div class="modal-box report-modal-box">
+      <div class="modal-header">
+        <div>
+          <h2>Monthly Report</h2>
+          <p>Review your structured monthly summary and patterns.</p>
+        </div>
+        <button type="button" class="icon-btn" data-action="close-report-modal">✕</button>
+      </div>
+  
+      <div class="report-toolbar">
+        <button type="button" class="secondary-btn" data-action="prev-report-month">
+          ← Previous
+        </button>
+  
+        <div class="report-period" data-report-period-label>
+          Current Month
+        </div>
+  
+        <button type="button" class="secondary-btn" data-action="next-report-month">
+          Next →
+        </button>
+      </div>
+  
+      <div class="report-content" data-report-content>
+        <div class="empty-state">
+          <p>No report generated yet.</p>
+        </div>
+      </div>
+    </div>
+  </div>
   
   <script type="module" src="./js/app.js"></script>
   
