@@ -1,16 +1,15 @@
 import { state } from "./state.js";
-import { getTodayParts } from "./utils.js";
+import { getTodayParts, getMonthKey } from "./utils.js";
 import {
   loadEntries,
   getEntryByDate,
   getEntryById,
   getEntriesByMonth,
   getOrCreateTodayEntry,
-  getRecentEntries,
   saveEntry,
   updateEntryStatus
 } from "./entries.js";
-import { getLatestReportLabel } from "./reports.js";
+import { getLatestReportLabel, generateMonthlyReport } from "./reports.js";
 import {
   renderAll,
   renderHistoryEntries,
@@ -18,12 +17,18 @@ import {
   closeEntryModal,
   openHistoryModal,
   closeHistoryModal,
+  openReportModal,
+  closeReportModal,
   populateEntryForm,
   resetEntryForm
 } from "./ui.js";
 
 function setToday() {
   state.today = getTodayParts();
+
+  if (!state.ui.activeReportMonth) {
+    state.ui.activeReportMonth = getMonthKey(state.today.date);
+  }
 }
 
 function calculateCurrentStreak() {
@@ -120,6 +125,37 @@ function collectFormData(form, fallbackEntry) {
   };
 }
 
+function buildAndOpenReport(monthKey = state.ui.activeReportMonth) {
+  const baseDate = `${monthKey}-01`;
+
+  state.ui.activeReportMonth = monthKey;
+  state.ui.activeReport = generateMonthlyReport(baseDate);
+
+  const existingIndex = state.reports.findIndex((report) => report.monthKey === monthKey);
+
+  if (existingIndex >= 0) {
+    state.reports[existingIndex] = state.ui.activeReport;
+  } else {
+    state.reports.push(state.ui.activeReport);
+  }
+
+  refreshDashboardStats();
+  renderAll();
+  openReportModal();
+}
+
+function shiftActiveReportMonth(offset) {
+  if (!state.ui.activeReportMonth) return;
+
+  const [year, month] = state.ui.activeReportMonth.split("-").map(Number);
+  const shiftedDate = new Date(year, month - 1 + offset, 1);
+  const shiftedMonthKey = `${shiftedDate.getFullYear()}-${String(
+    shiftedDate.getMonth() + 1
+  ).padStart(2, "0")}`;
+
+  buildAndOpenReport(shiftedMonthKey);
+}
+
 function bindEvents() {
   document.addEventListener("click", (event) => {
     const action = event.target.dataset.action;
@@ -133,6 +169,7 @@ function bindEvents() {
     if (action === "close-entry-form") {
       closeEntryModal();
       resetEntryForm();
+      renderAll();
     }
 
     if (action === "view-past-entries") {
@@ -141,6 +178,7 @@ function bindEvents() {
 
     if (action === "close-history-modal") {
       closeHistoryModal();
+      renderAll();
     }
 
     if (action === "edit-entry") {
@@ -148,7 +186,20 @@ function bindEvents() {
     }
 
     if (action === "generate-report") {
-      alert("Report generation comes later.");
+      buildAndOpenReport(state.ui.activeReportMonth || getMonthKey(state.today.date));
+    }
+
+    if (action === "close-report-modal") {
+      closeReportModal();
+      renderAll();
+    }
+
+    if (action === "prev-report-month") {
+      shiftActiveReportMonth(-1);
+    }
+
+    if (action === "next-report-month") {
+      shiftActiveReportMonth(1);
     }
   });
 
@@ -175,6 +226,7 @@ function bindEvents() {
     entryModal.addEventListener("click", (event) => {
       if (event.target === entryModal) {
         closeEntryModal();
+        renderAll();
       }
     });
   }
@@ -184,6 +236,17 @@ function bindEvents() {
     historyModal.addEventListener("click", (event) => {
       if (event.target === historyModal) {
         closeHistoryModal();
+        renderAll();
+      }
+    });
+  }
+
+  const reportModal = document.querySelector("[data-report-modal]");
+  if (reportModal) {
+    reportModal.addEventListener("click", (event) => {
+      if (event.target === reportModal) {
+        closeReportModal();
+        renderAll();
       }
     });
   }
@@ -198,4 +261,5 @@ function initApp() {
 
   console.log(`${state.app.name} initialized`);
 }
+
 document.addEventListener("DOMContentLoaded", initApp);
