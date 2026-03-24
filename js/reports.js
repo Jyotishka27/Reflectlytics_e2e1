@@ -3,10 +3,26 @@ import { getEntriesByMonth } from "./entries.js";
 import { formatDisplayDate, getMonthKey } from "./utils.js";
 
 function normalizeTextList(value = "") {
-  return value
-    .split(/\n|,/)
+  const cleaned = value.trim();
+  if (!cleaned) return [];
+
+  const lines = cleaned
+    .split("\n")
     .map((item) => item.trim())
     .filter(Boolean);
+
+  if (lines.length > 1) {
+    return lines;
+  }
+
+  const commaParts = cleaned
+    .split(",")
+    .map((item) => item.trim())
+    .filter(Boolean);
+
+  const shouldTreatAsList = commaParts.length > 1 && commaParts.every((part) => part.length <= 60);
+
+  return shouldTreatAsList ? commaParts : [cleaned];
 }
 
 function addItemsToCountMap(items, map) {
