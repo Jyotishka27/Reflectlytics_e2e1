@@ -33,6 +33,12 @@ export const state = {
     activeSection: "dashboard",
     isEntryFormOpen: false,
     isEditingEntry: false,
-    selectedEntryId: null
+    selectedEntryId: null,
+  
+    isHistoryModalOpen: false,
+  
+    isReportModalOpen: false,
+    activeReportMonth: "",
+    activeReport: null
   }
 };
