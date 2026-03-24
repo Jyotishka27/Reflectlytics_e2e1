@@ -145,7 +145,7 @@ export function renderReportSnapshot() {
       <p><strong>Completed entries:</strong> ${snapshot.completedEntries}</p>
       <p><strong>In progress:</strong> ${snapshot.inProgressEntries}</p>
       <p>${snapshot.summary}</p>
-      <button type="button" data-action="generate-report" disabled>Generate Report</button>
+      <button type="button" class="secondary-btn" data-action="generate-report">Generate Report</button>
     </div>
   `;
 }
@@ -251,10 +251,189 @@ export function resetEntryForm() {
   delete form.dataset.editingEntryId;
 }
 
+function renderTagList(items = []) {
+  if (!items.length) {
+    return `
+      <div class="empty-state">
+        <p>No data available.</p>
+      </div>
+    `;
+  }
+
+  return `
+    <div class="tag-list">
+      ${items
+        .map((item) => `<span class="tag">${item.label} (${item.count})</span>`)
+        .join("")}
+    </div>
+  `;
+}
+
+function renderHighlightList(items = [], emptyMessage = "No highlights available.") {
+  if (!items.length) {
+    return `
+      <div class="empty-state">
+        <p>${emptyMessage}</p>
+      </div>
+    `;
+  }
+
+  return items
+    .map(
+      (item) => `
+        <article class="history-item">
+          <div class="history-item-top">
+            <h4>${item.displayDate || formatDisplayDate(item.date)}</h4>
+          </div>
+          <p>${item.text}</p>
+        </article>
+      `
+    )
+    .join("");
+}
+
+export function renderReportModal() {
+  const reportModalEl = document.querySelector("[data-report-modal]");
+  const reportPeriodLabelEl = document.querySelector("[data-report-period-label]");
+  const reportContentEl = document.querySelector("[data-report-content]");
+
+  if (!reportModalEl || !reportPeriodLabelEl || !reportContentEl) return;
+
+  if (!state.ui.activeReport) {
+    reportPeriodLabelEl.textContent = "No report selected";
+    reportContentEl.innerHTML = `
+      <div class="empty-state">
+        <p>No report generated yet.</p>
+      </div>
+    `;
+    return;
+  }
+
+  const report = state.ui.activeReport;
+
+  reportPeriodLabelEl.textContent = report.period.label;
+
+  reportContentEl.innerHTML = `
+    <div class="report-grid">
+      <article class="stat-card">
+        <span>Total Entries</span>
+        <strong>${report.totals.entries}</strong>
+      </article>
+
+      <article class="stat-card">
+        <span>Completed</span>
+        <strong>${report.totals.completed}</strong>
+      </article>
+
+      <article class="stat-card">
+        <span>In Progress</span>
+        <strong>${report.totals.inProgress}</strong>
+      </article>
+
+      <article class="stat-card">
+        <span>Empty Days</span>
+        <strong>${report.totals.emptyDays}</strong>
+      </article>
+
+      <article class="stat-card">
+        <span>Professional Hours</span>
+        <strong>${report.totals.professionalHours}</strong>
+      </article>
+    </div>
+
+    <section class="panel report-section">
+      <div class="section-title">
+        <div>
+          <h3>Top Wins</h3>
+          <p>Most repeated positive patterns this month.</p>
+        </div>
+      </div>
+      ${renderTagList(report.patterns.topWins)}
+    </section>
+
+    <section class="panel report-section">
+      <div class="section-title">
+        <div>
+          <h3>Top Blockers</h3>
+          <p>What slowed you down the most.</p>
+        </div>
+      </div>
+      ${renderTagList(report.patterns.topBlockers)}
+    </section>
+
+    <section class="panel report-section">
+      <div class="section-title">
+        <div>
+          <h3>Professional Moods</h3>
+          <p>Most repeated work moods this month.</p>
+        </div>
+      </div>
+      ${renderTagList(report.patterns.professionalMoods)}
+    </section>
+
+    <section class="panel report-section">
+      <div class="section-title">
+        <div>
+          <h3>Personal Moods</h3>
+          <p>How your personal days felt overall.</p>
+        </div>
+      </div>
+      ${renderTagList(report.patterns.personalMoods)}
+    </section>
+
+    <section class="panel report-section">
+      <div class="section-title">
+        <div>
+          <h3>Learning Highlights</h3>
+          <p>Recent lessons captured during the month.</p>
+        </div>
+      </div>
+      ${renderHighlightList(report.highlights.learnings, "No learning highlights yet.")}
+    </section>
+
+    <section class="panel report-section">
+      <div class="section-title">
+        <div>
+          <h3>Reflection Highlights</h3>
+          <p>What you felt could improve.</p>
+        </div>
+      </div>
+      ${renderHighlightList(report.highlights.reflections, "No reflection highlights yet.")}
+    </section>
+
+    <section class="panel report-section">
+      <div class="section-title">
+        <div>
+          <h3>Gratitude Highlights</h3>
+          <p>Moments worth remembering.</p>
+        </div>
+      </div>
+      ${renderHighlightList(report.highlights.gratitude, "No gratitude highlights yet.")}
+    </section>
+  `;
+}
+
+export function openReportModal() {
+  const modal = document.querySelector("[data-report-modal]");
+  if (!modal) return;
+
+  modal.classList.remove("hidden");
+  document.body.style.overflow = "hidden";
+}
+
+export function closeReportModal() {
+  const modal = document.querySelector("[data-report-modal]");
+  if (!modal) return;
+
+  modal.classList.add("hidden");
+  document.body.style.overflow = "";
+}
+
 export function renderAll() {
   renderHeader();
   renderDashboardStats();
   renderTodayCard();
   renderRecentEntries();
   renderReportSnapshot();
+  renderReportModal();
 }
