@@ -344,6 +344,22 @@ export function renderReportModal() {
     <section class="panel report-section">
       <div class="section-title">
         <div>
+          <h3>AI Insights</h3>
+          <p>Preview the structured prompt that will be sent to the language model later.</p>
+        </div>
+        <button type="button" class="secondary-btn" data-action="preview-ai-prompt">
+          Preview AI Prompt
+        </button>
+      </div>
+    
+      <div class="empty-state">
+        <p>LLM integration is not connected yet. Use Preview AI Prompt to inspect the prompt payload.</p>
+      </div>
+    </section>
+
+    <section class="panel report-section">
+      <div class="section-title">
+        <div>
           <h3>Top Wins</h3>
           <p>Most repeated positive patterns this month.</p>
         </div>
