@@ -1,5 +1,6 @@
 import { state } from "./state.js";
 import { getTodayParts, getMonthKey } from "./utils.js";
+import { buildMonthlySummaryPrompt } from "./ai.js";
 import {
   loadEntries,
   getEntryByDate,
@@ -156,6 +157,16 @@ function shiftActiveReportMonth(offset) {
   buildAndOpenReport(shiftedMonthKey);
 }
 
+function previewAIPrompt() {
+  if (!state.ui.activeReport) return;
+
+  const prompt = buildMonthlySummaryPrompt(state.ui.activeReport);
+
+  console.log("=== AI MONTHLY SUMMARY PROMPT ===");
+  console.log(prompt);
+  alert("AI prompt preview generated. Check the browser console.");
+}
+
 function bindEvents() {
   document.addEventListener("click", (event) => {
     const action = event.target.dataset.action;
@@ -200,6 +211,10 @@ function bindEvents() {
 
     if (action === "next-report-month") {
       shiftActiveReportMonth(1);
+    }
+
+    if (action === "preview-ai-prompt") {
+      previewAIPrompt();
     }
   });
 
